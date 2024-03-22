@@ -61,6 +61,7 @@ def main():
 
     #Set up oscilloscope
     scope = rm.open_resource('TCPIP::10.77.76.3::INSTR')
+    time.sleep(2)
     print(scope.query('*IDN?'))
 
     scope.write(":WAVeform:FORMat ASCii")  # Set waveform data format to ASCII
@@ -84,8 +85,9 @@ def main():
 
         move_to_pos(s, pos, wait_for_input=False)
         scope.write(":WAVeform:SOURce CHANnel4")  # Select Channel as the source
-        scope.write(":WAVeform:DATA?")            # Request waveform data
-        waveform_data = scope.read()
+
+        time.sleep(5)
+        waveform_data = scope.query(":WAVeform:DATA?")  # Request waveform data
 
         # Can't send commands to cnc machine too fast, also
         # too fast measurements indicate faulty measurement.
