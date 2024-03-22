@@ -1,0 +1,47 @@
+Agilent Technologies,54832B,MY41000408,A.03.70,0
+
+Move (X=-50, Y=0, Z=-20): ok
+Move (X=-50, Y=0, Z=-15): ok
+Traceback (most recent call last):
+  File "C:\Users\tiston\code\ludwig_code\move_and_measure.py", line 107, in <module>
+    main()
+  File "C:\Users\tiston\code\ludwig_code\move_and_measure.py", line 87, in main
+    waveform_data = scope.read()
+                    ^^^^^^^^^^^^
+  File "C:\Users\tiston\AppData\Local\miniconda3\envs\ultrasound\Lib\site-packages\pyvisa\resources\messagebased.py", line 485, in read
+    message = self._read_raw().decode(enco)
+              ^^^^^^^^^^^^^^^^
+  File "C:\Users\tiston\AppData\Local\miniconda3\envs\ultrasound\Lib\site-packages\pyvisa\resources\messagebased.py", line 441, in _read_raw
+    chunk, status = self.visalib.read(self.session, size)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tiston\AppData\Local\miniconda3\envs\ultrasound\Lib\site-packages\pyvisa_py\highlevel.py", line 512, in read
+    data, status_code = self.sessions[session].read(count)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tiston\AppData\Local\miniconda3\envs\ultrasound\Lib\site-packages\pyvisa_py\tcpip.py", line 538, in read
+    error, reason, data = read_fun(
+                          ^^^^^^^^^
+  File "C:\Users\tiston\AppData\Local\miniconda3\envs\ultrasound\Lib\site-packages\pyvisa_py\protocols\vxi11.py", line 235, in device_read
+    return self.make_call(
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\tiston\AppData\Local\miniconda3\envs\ultrasound\Lib\site-packages\pyvisa_py\protocols\rpc.py", line 479, in make_call
+    return super(RawTCPClient, self).make_call(proc, args, pack_func, unpack_func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tiston\AppData\Local\miniconda3\envs\ultrasound\Lib\site-packages\pyvisa_py\protocols\rpc.py", line 234, in make_call
+    self.do_call()
+  File "C:\Users\tiston\AppData\Local\miniconda3\envs\ultrasound\Lib\site-packages\pyvisa_py\protocols\rpc.py", line 507, in do_call
+    reply = _recvrecord(self.sock, self.timeout, min_packages=min_packages)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tiston\AppData\Local\miniconda3\envs\ultrasound\Lib\site-packages\pyvisa_py\protocols\rpc.py", line 352, in _recvrecord
+    r, w, x = select.select([sock], [], [], select_timeout)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tiston\code\ludwig_code\move_and_measure.py", line 109, in <module>
+    graceful_exit(s, scope)
+  File "C:\Users\tiston\code\ludwig_code\move_and_measure.py", line 50, in graceful_exit
+    s.exit()
+    ^^^^^^
+AttributeError: 'Serial' object has no attribute 'exit'

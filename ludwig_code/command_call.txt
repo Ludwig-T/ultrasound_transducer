@@ -1,0 +1,3 @@
+must go into miniconda and activate ultrasound then run:
+
+python ludwig_code\move_and_measure.py > log.txt 2>&1
