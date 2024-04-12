@@ -64,16 +64,17 @@ def main():
     time.sleep(2)
     print(scope.query('*IDN?'))
 
-    scope.write(":WAVeform:FORMat ASCii")  # Set waveform data format to ASCII
+    scope.write(":WAVeform:FORMat ASCii")
     scope.write(":WAVeform:POINts MAX")    # Set number of waveform points to acquire
-
+    
+    #scope.write(":WAVeform:BYTeorder MSBFirst")
+    
     # Set up CNC machine
     s = serial.Serial('COM5', 115200)
     s.write("\r\n\r\n".encode())
     time.sleep(2)
     s.flushInput()
 
-    #df_pos = pd.read_csv("Jocelyn_hydrophone_code_python/coord.csv")
     df_pos = pd.read_csv("coordinates_light.csv")
 
     for index, pos in df_pos.iterrows():
@@ -82,13 +83,13 @@ def main():
         dt_object = datetime.datetime.fromtimestamp(timestamp)
         date_str = dt_object.strftime("%Y_%m_%d_%H_%M_%S")
 
-
         move_to_pos(s, pos, wait_for_input=False)
-        scope.write(":WAVeform:SOURce CHANnel4")  # Select Channel as the source
-
-        time.sleep(5)
-        waveform_data = scope.query(":WAVeform:DATA?")  # Request waveform data
-
+        if index <= 1:
+            time.sleep(2)
+        
+        scope.write(":WAVeform:SOURce CHANnel1")  # Select Channel as the source
+        time.sleep(2)
+        waveform_data = scope.query(":WAVeform:DATA?")
         # Can't send commands to cnc machine too fast, also
         # too fast measurements indicate faulty measurement.
         if time.time() - timestamp < 2:
@@ -110,9 +111,7 @@ if __name__ == "__main__":
       main()
    except KeyboardInterrupt:
       graceful_exit(s, scope)
-      pass    
-# Read waveform data
-
+      pass
 
 # 286228 to 686241
 
