@@ -1,3 +1,5 @@
 *.csv
 *.npz
 *.xml
+*.txt
+data.pkl
