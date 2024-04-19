@@ -9,12 +9,12 @@ z = []
 # Processed results are saved at the end so we don't need to recompute it everytime
 # If you changed something to the raw results and wanna compute it again, just delete results.npz
 
-if os.path.isfile("ludwig_code/processed_data/results2.npz"):
-    file = np.load("ludwig_code/processed_data/results2.npz")
+if os.path.isfile("ludwig_code/processed_data/results.npz"):
+    file = np.load("ludwig_code/processed_data/results.npz")
     coord = file["coord"]
     z = file["z"]
 else:
-    folder = "ludwig_code/raw_data2"
+    folder = "ludwig_code/result_quick"
     for file in os.listdir(folder):
         name = os.fsdecode(file)
         coord_str = name[:len(name)-4].split("_")
@@ -37,7 +37,7 @@ else:
         z.append(pos_peak-neg_peak)
         to_print = name + " " + coord_str[0] + " " + coord_str[1] + " {}"
         print(to_print.format(z[-1]))
-    np.savez("ludwig_code/processed_data/results2.npz", coord=coord, z=z)
+    np.savez("ludwig_code/processed_data/results_quick.npz", coord=coord, z=z)
 
 coord = np.asarray(coord)
 x = coord[:, 0]
@@ -49,15 +49,17 @@ Y = np.linspace(min(y), max(y))
 X, Y = np.meshgrid(X, Y)  # 2D grid for interpolation
 
 # You can change/remove kernel="gaussian" for other types of interpolation
-interp = RBFInterpolator(list(zip(x, y)), np.asarray(z), kernel="gaussian", epsilon=1)
+interp = RBFInterpolator(list(zip(x, y)), np.asarray(z), kernel="linear", epsilon=1)
 n = 50j
 Z = interp(np.mgrid[min(x):max(x):n, min(y):max(y):n].reshape(2, -1).T)
 # You can add the argument cmap= "..." to change the colormap of the plot
 # For more info on what type of colormap you can choose, visit: https://matplotlib.org/stable/tutorials/colors/colormaps.html
 plt.pcolormesh(X, Y, Z.reshape(50, 50), shading='auto')
 # Comment the following line to remove the black dots
-#plt.plot(x, y, "ok", label="input point")
+plt.scatter(x, y, c=z, label="input point")
 plt.legend()
 plt.colorbar()
 plt.axis("equal")
+plt.show()
+plt.plot(x, z)
 plt.show()
