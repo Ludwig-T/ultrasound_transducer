@@ -2,4 +2,5 @@
 *.npz
 *.xml
 *.txt
+*.hkl*
 data.pkl
