@@ -25,9 +25,12 @@ def generate_coordinates(specifications, filename):
 if __name__ == "__main__":
     specifications = {
         #    (min, max, step)
-        'X': (-1.2, 1.2, 0.05),  # Horizontal
-        'Y': (0, 0, 1),       # Hydrophone direction
-        'Z': (-1.2, 1.2, 0.05)   # Vertical
+        'X': (-0.4, 0.4, 0.02),  # Horizontal
+        'Y': (0, 1.5, 0.01),   # Hydrophone direction
+        'Z': (-0.4, 0.4, 0.02)   # Vertical
     }
-    size = generate_coordinates(specifications, "coordinates_light.csv")
-    print(size)
+    size = generate_coordinates(specifications, "coordinates_3d.csv")
+    time_per_measurement = 1 # s
+    print(f"Total time to complete measurement: {size * time_per_measurement / (60 * 60 * 24)} days.")
+    print(f"Esstimated data size: {size * 8022792 / 1024 ** 3} GB")
+    print(f"Number of data points: {size}")
