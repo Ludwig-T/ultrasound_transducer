@@ -10,6 +10,13 @@ from scipy.ndimage import gaussian_filter, shift
 from scipy.signal import correlation_lags
 
 
+def get_files_sorted_by_creation_time(folder):
+    files = os.listdir(folder)
+    full_paths = [os.path.join(folder, file) for file in files]
+    sorted_files = sorted(full_paths, key=os.path.getctime)
+    return sorted_files
+
+
 def process_file(func_in):
     file = func_in[0]
     folder = func_in[1]
@@ -61,7 +68,7 @@ def process_data(processed_file, folder, cores=1):
         else:
             try:
                 if cores == 1:
-                    for file in files: #tqdm(files):
+                    for file in tqdm(files):
                         c, v, s = process_file((file, folder))
                         coord.append(c)
                         value.append(v)
@@ -134,8 +141,8 @@ if __name__ == "__main__":
     
     # 17may nice front profile
     # 24may nice side profile
-    processed_file = "R:/measurements/24may.npz"
-    folder = "R:/measurements/24may"
+    processed_file = "R:/measurements/10may.npz"
+    folder = "R:/measurements/10may"
     plane_to_plot = 0
     realign_flag = True
     smooth = False
