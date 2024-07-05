@@ -8,9 +8,85 @@ import pandas as pd
 import os
 import csv
 import psutil
+import matplotlib.pyplot as plt
 from os import system
 from os.path import join
 from data_analysis_3d import process_data
+from scipy.ndimage import gaussian_filter1d
+
+
+def histogram_magic_2(waveform, bins=60, cut_off=0.35, filter_std=2, plot=False):
+    
+    waveform_select = waveform[int(len(waveform) * cut_off):] # Avoid transients
+    
+    count, bins = np.histogram(waveform_select, bins=bins)
+    count_filtered = gaussian_filter1d(count, filter_std)
+    # Step 2: Separate positive and negative bins
+    count_pos = count_filtered[bins[1:] > 0]
+    bins_pos = np.concatenate(([bins[bins < 0][-1]], bins[bins > 0]))
+    count_neg = count_filtered[bins[1:] < 0]
+    bins_neg = bins[bins < 0]
+
+    # Step 3: Find peaks
+    neg_max_arg = np.argmax(count_neg)
+    neg_peak = bins_neg[neg_max_arg]
+    pos_max_arg = np.argmax(count_pos)
+    pos_peak = bins_pos[pos_max_arg]
+    
+    if plot:
+        plt.figure()
+        plt.plot(waveform)
+        plt.axvline(int(len(waveform) * cut_off), color="red")
+        plt.title("Waveform")
+        plt.show()
+        
+        plt.figure()
+        plt.title("Waveform Cutoff")
+        plt.plot(waveform_select)
+        plt.show()    
+        
+        # Plot histogram
+        plt.figure()
+        plt.bar(bins[:-1], count, width=bins[0] - bins[1])
+        plt.title('Histogram of Waveform')
+        plt.xlabel('Bin Edges')
+        plt.ylabel('Counts')
+        plt.grid(True)
+        plt.show()
+        
+        # Plot histogram
+        plt.figure()
+        plt.bar(bins[:-1], count_filtered, width=bins[0] - bins[1])
+        plt.title('Filtered Histogram of Waveform')
+        plt.xlabel('Bin Edges')
+        plt.ylabel('Counts')
+        plt.grid(True)
+        plt.show()
+        
+        # Plot positive and negative bins
+        plt.figure()
+        plt.bar(bins_pos[:-1], count_pos, width=np.diff(bins_pos), align='edge', alpha=0.75, label='Positive')
+        plt.bar(bins_neg[:-1], count_neg, width=np.diff(bins_neg), align='edge', alpha=0.75, color='orange', label='Negative')
+        plt.title('Positive and Negative Bins')
+        plt.xlabel('Bin Edges')
+        plt.ylabel('Counts')
+        plt.legend()
+        plt.grid(True)
+        plt.show()
+
+        # Plot peaks
+        plt.figure()
+        plt.bar(bins[:-1], count_filtered, width=bins[0] - bins[1])
+        plt.axvline(neg_peak, color='red', linestyle='dashed', linewidth=2, label=f'Negative Peak: {neg_peak:.4f}')
+        plt.axvline(pos_peak, color='green', linestyle='dashed', linewidth=2, label=f'Positive Peak: {pos_peak:.4f}')
+        plt.title('Histogram with Peaks')
+        plt.xlabel('Bin Edges')
+        plt.ylabel('Counts')
+        plt.legend()
+        plt.grid(True)
+        
+    return pos_peak - neg_peak
+
 
 def histogram_magic(waveform):
     """
@@ -114,7 +190,14 @@ def main(output_path, coordinates_path, processed_filename, store="raw"):
     print("")
     
     if store == "val": 
-        f = open(join(output_path, "data_values.csv"), "w", newline="")
+        file_path = join(output_path, "data_values.csv")
+        count = 0
+        while os.path.exists(file_path):
+            print(f"Warning: file path already exists {file_path}")
+            count += 1
+            file_path = join(output_path, f"{count}_data_values.csv")
+            
+        f = open(file_path, "w", newline="")
         csv_writer = csv.writer(f)
         csv_writer.writerow(["Value", "X", "Y", "Z"])  # Write header
         
@@ -174,7 +257,8 @@ def main(output_path, coordinates_path, processed_filename, store="raw"):
         elif store == "val":
             flush_count += 1
             val = histogram_magic(voltage_data)
-            csv_writer.writerow([val, pos['X'], pos['Z'], pos['Y']])
+            val2 = histogram_magic_2(voltage_data)
+            csv_writer.writerow([val, val2, pos['X'], pos['Z'], pos['Y']])
             if flush_count > 50:
                 process = psutil.Process()
                 memory_info = process.memory_info()
@@ -200,11 +284,12 @@ def main(output_path, coordinates_path, processed_filename, store="raw"):
         process_data(processed_filename, output_path)
 
 if __name__ == "__main__":
-   
-    output_dir = "R:/measurements/10may"
-    processed_filename = "R:/measurements/10may.npz"
-    coord_path = "C:/Users/tiston/code/coord_meas.csv"
+    file_name = "transverse_5july" # File name of output
+    coord_path = "C:/Users/tiston/code/coord_meas.csv" # csv with coordinates
     store = "val"  # Store raw data or processed single value
+    
+    output_dir = f"R:/measurements/{file_name}" # Folder to store data
+    processed_filename = f"R:/measurements/{file_name}.npz" # File for processed data if also storing raw values
     try:
         main(output_dir, coord_path, processed_filename, store)
 
