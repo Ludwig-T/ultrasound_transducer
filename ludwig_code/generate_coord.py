@@ -22,6 +22,16 @@ def plot_xz_plane(filename):
 
 
 def generate_coordinates(specifications, filename):
+    """Generates a csv of coordinates from specifications
+
+    Args:
+        specifications (dict): Dictionary of specification of size and step size of measurement (see example)
+        filename (str): The name/path of the output file
+
+    Returns:
+        int: number of coordinates
+    """
+    
     size = 0
     with open(filename, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
@@ -30,9 +40,7 @@ def generate_coordinates(specifications, filename):
         min_x, max_x, step_x = specifications.get('X')
         min_y, max_y, step_y = specifications.get('Y')
         min_z, max_z, step_z = specifications.get('Z')
-        MIN_x, MAX_x, STEP_x = specifications.get('X_big')
-        MIN_z, MAX_z, STEP_z = specifications.get('Z_big')
-        
+                
         step_x_factor = 1 / step_x
         step_y_factor = 1 / step_y
         step_z_factor = 1 / step_z
@@ -57,28 +65,22 @@ if __name__ == "__main__":
         #    (min, max, step)
         'X': (-5, 5, 0.75),  # Horizontal
         'Y': (0, 30, 3),   # Hydrophone direction (should be in [0, inf) ) to go away from hydrophone
-        'Z': (-5, 5, 0.75),   # Vertical
-        "X_big" : (-1, 1, 0.1),
-        "Z_big" : (-1, 1, 0.1)
+        'Z': (-5, 5, 0.75)   # Vertical
     }
     
     specifications_meas = {
         #    (min, max, step)
         'X': (0, 0, 0.075),  # Horizontal
         'Y': (0, 30, 0.075),   # Hydrophone direction (should be in [0, inf) ) to go away from hydrophone
-        'Z': (-3, 3, 0.075),   # Vertical
-        "X_big" : (-1, 1, 0.1),
-        "Z_big" : (-1, 1, 0.1)
+        'Z': (-3, 3, 0.075)   # Vertical
     }
-    
+    """
     specifications_meas = {
         #    (min, max, step)
         'X': (-3, 3, 0.075),  # Horizontal
         'Y': (0, 0, 0.15),   # Hydrophone direction (should be in [0, inf) ) to go away from hydrophone
-        'Z': (-3, 3, 0.075),   # Vertical
-        "X_big" : (-1, 1, 0.1),
-        "Z_big" : (-1, 1, 0.1)
-    }
+        'Z': (-3, 3, 0.075)   # Vertical
+    }"""
     
     """
     specifications_meas = {
