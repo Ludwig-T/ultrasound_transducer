@@ -199,7 +199,7 @@ def main(output_path, coordinates_path, processed_filename, store="raw"):
             
         f = open(file_path, "w", newline="")
         csv_writer = csv.writer(f)
-        csv_writer.writerow(["Value", "X", "Y", "Z"])  # Write header
+        csv_writer.writerow(["Value_1", "Value_2", "X", "Y", "Z"])  # Write header
         
     
     #Set up oscilloscope
@@ -284,7 +284,7 @@ def main(output_path, coordinates_path, processed_filename, store="raw"):
         process_data(processed_filename, output_path)
 
 if __name__ == "__main__":
-    file_name = "transverse_5july" # File name of output
+    file_name = "longitudal_5july" # File name of output
     coord_path = "C:/Users/tiston/code/coord_meas.csv" # csv with coordinates
     store = "val"  # Store raw data or processed single value
     
