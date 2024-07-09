@@ -88,21 +88,6 @@ def histogram_magic_2(waveform, bins=60, cut_off=0.35, filter_std=2, plot=False)
     return pos_peak - neg_peak
 
 
-def histogram_magic(waveform):
-    """
-    Calculates a voltage value from waveform
-    """
-    count, bins = np.histogram(waveform, bins=30)
-    count_pos, bins_pos = count[bins[1:] > 0], np.concatenate(([bins[bins < 0][-1]], bins[bins > 0]))
-    count_neg, bins_neg = count[bins[1:] < 0], bins[bins < 0]
-
-    neg_max_arg = np.argmax(count_neg)
-    neg_peak = (bins_neg[neg_max_arg] + bins_neg[neg_max_arg + 1]) / 2
-    pos_max_arg = np.argmax(count_pos)
-    pos_peak = (bins_pos[pos_max_arg] + bins_pos[pos_max_arg + 1]) / 2
-
-    return pos_peak-neg_peak
-
 #Code interacting with CNC-machine is thanks to previous master student
 def move_to_pos(s, pos, wait_for_input=True):
     """
@@ -129,6 +114,7 @@ def write_g_code(pos):
     :return: String containing the G-code
     """
     return "G0 X{} Y{} Z{}\n".format(pos['X'], pos['Y'], pos['Z'])
+
 
 def word2float(word_int, y_inc, y_org):
     """
@@ -199,9 +185,8 @@ def main(output_path, coordinates_path, processed_filename, store="raw"):
             
         f = open(file_path, "w", newline="")
         csv_writer = csv.writer(f)
-        csv_writer.writerow(["Value_1", "Value_2", "X", "Y", "Z"])  # Write header
+        csv_writer.writerow(["Value", "X", "Y", "Z"])  # Write header
         
-    
     #Set up oscilloscope
     scope = rm.open_resource('TCPIP::10.77.76.3::INSTR')
     time.sleep(2)
@@ -256,9 +241,8 @@ def main(output_path, coordinates_path, processed_filename, store="raw"):
             hkl.dump(voltage_data, join(output_path, f"{pos['X']}_{pos['Z']}_{pos['Y']}_raw_{date_str}.hkl"), mode="w", compression="gzip")
         elif store == "val":
             flush_count += 1
-            val = histogram_magic(voltage_data)
-            val2 = histogram_magic_2(voltage_data)
-            csv_writer.writerow([val, val2, pos['X'], pos['Z'], pos['Y']])
+            val = histogram_magic_2(voltage_data)
+            csv_writer.writerow([val, pos['X'], pos['Z'], pos['Y']])
             if flush_count > 50:
                 process = psutil.Process()
                 memory_info = process.memory_info()
@@ -284,6 +268,7 @@ def main(output_path, coordinates_path, processed_filename, store="raw"):
         process_data(processed_filename, output_path)
 
 if __name__ == "__main__":
+    
     file_name = "longitudal_5july" # File name of output
     coord_path = "C:/Users/tiston/code/coord_meas.csv" # csv with coordinates
     store = "val"  # Store raw data or processed single value

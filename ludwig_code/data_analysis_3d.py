@@ -6,15 +6,7 @@ import hickle as hkl
 import matplotlib.pyplot as plt
 from os.path import join
 import multiprocessing as mp
-from scipy.ndimage import gaussian_filter, shift
-from scipy.signal import correlation_lags
-
-
-def get_files_sorted_by_creation_time(folder):
-    files = os.listdir(folder)
-    full_paths = [os.path.join(folder, file) for file in files]
-    sorted_files = sorted(full_paths, key=os.path.getctime)
-    return sorted_files
+from scipy.ndimage import gaussian_filter
 
 
 def process_file(func_in):
@@ -93,52 +85,6 @@ def process_data(processed_file, folder, cores=1):
     return coord, value, std
 
 
-def best_shift_correlation(array1, array2, max_shift=5):
-    """
-    Calculate the best correlation between two 1D arrays by shifting one of them.
-
-    Parameters:
-    - array1: First 1D array.
-    - array2: Second 1D array.
-    - max_shift: Maximum shift to apply to array2.
-
-    Returns:
-    - best_corr: Best correlation coefficient.
-    - best_shift: Shift value that gives the best correlation.
-    - best_shifted_array2: The shifted version of array2 that gives the best correlation.
-    """
-    best_corr = -1  # Initialize with the minimum possible correlation
-    best_shift = 0
-    best_shifted_array2 = array2
-    corr0 = np.corrcoef(array1, array2)[0, 1]
-    for shift_amount in range(-max_shift, max_shift + 1):
-        shifted_array2 = shift(array2, shift_amount, cval=0)
-        corr = np.corrcoef(array1[max_shift:-max_shift], shifted_array2[max_shift:-max_shift])[0, 1]
-
-        if corr - corr0 > best_corr:
-            best_corr = corr - corr0
-            best_shift = shift_amount
-            best_shifted_array2 = shifted_array2
-
-    return best_corr, best_shift, best_shifted_array2
-
-
-def realign(grid_df):
-    """ Align data using image registration. """
-    grid_df = np.array(grid_df)
-    new_grid = grid_df.copy()  # Use the first frame as reference
-    aligned_images = [grid_df[:,0]]
-    errors = []
-    
-    for z in range(1, grid_df.shape[1] - 1):
-        best_corr, best_shift, best_shift_array = best_shift_correlation(new_grid[:,z-1], grid_df[:,z])
-        if best_corr > 0.3:
-            new_grid[:,z] = best_shift_array
-        errors.append(best_corr)
-        
-    return new_grid
-
-
 if __name__ == "__main__":
     
     # 17may nice front profile
@@ -147,7 +93,6 @@ if __name__ == "__main__":
     processed_file = f"R:/measurements/{name}.npz"
     folder = f"R:/measurements/{name}"
     plane_to_plot = 0
-    realign_flag = False
     smooth = False
     interpolation = "none" #"nsearest"
     cmap = "jet"
@@ -192,9 +137,6 @@ if __name__ == "__main__":
 
         # Pivot the DataFrame to create a grid
         grid_df = df.pivot(index='Y', columns='X', values='Value').sort_index(ascending=False)
-        
-        if realign_flag:
-            grid_df = realign(grid_df)
         
         if smooth:
             grid_df = gaussian_filter(grid_df, sigma=1)
