@@ -46,6 +46,7 @@ def process_file(func_in):
         std = np.nan
     return coord, value, std
 
+
 def process_data(processed_file, folder, cores=1):
     coord = []
     value = []
@@ -60,6 +61,7 @@ def process_data(processed_file, folder, cores=1):
     else:
         print("Let the processing COMMENCE", flush=True)
         files = os.listdir(folder)
+        print(files)
         if len(files) == 1:
             df = pd.read_csv(join(folder, files[0]))  # Read the CSV file
             coord = df[['X', 'Y', 'Z']].values.tolist()  # Extract coordinates
@@ -141,18 +143,19 @@ if __name__ == "__main__":
     
     # 17may nice front profile
     # 24may nice side profile
-    processed_file = "R:/measurements/10may.npz"
-    folder = "R:/measurements/10may"
+    name = "longitudal_26june"
+    processed_file = f"R:/measurements/{name}.npz"
+    folder = f"R:/measurements/{name}"
     plane_to_plot = 0
-    realign_flag = True
+    realign_flag = False
     smooth = False
-    interpolation = "none" #"nearest"
+    interpolation = "none" #"nsearest"
     cmap = "jet"
     
     plane_dict = {
-        0: "X [cm]",
-        1: "Y [cm]",
-        2: "Z [cm]"
+        0: "X [mm]",
+        1: "Y [mm]",
+        2: "Z [mm]"
     }
     coord, value, std = process_data(processed_file, folder)
 
