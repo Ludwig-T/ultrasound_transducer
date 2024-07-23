@@ -1,3 +1,9 @@
+# Code by Ludwig Tiston
+#
+# This code does the measurements by interacting with the oscilloscope and CNC machine.
+# Can store the raw data, where it will fill the output file with hickle files with the data for each measurment.
+# Otherwise it can also store just the processed single value, it then creates just one file in the folder. (RECOMMENDED)
+
 import pyvisa
 import time
 import serial
@@ -16,7 +22,19 @@ from scipy.ndimage import gaussian_filter1d
 
 
 def histogram_magic_2(waveform, bins=60, cut_off=0.35, filter_std=2, plot=False):
-    
+    """Extracts a voltage value from the measured waveform. Principle from Pr. Rares Salomir. 
+       Can plot stages for educational purpose.
+
+    Args:
+        waveform (list or 1d-array): Voltage waveform from oscilloscope (cropped)
+        bins (int, optional): Number of bins to use in histogram stage. Defaults to 60.
+        cut_off (float, optional): Coefficient for cropping out transients. Defaults to 0.35.
+        filter_std (int, optional): Standard deviation for the gaussian filter. Defaults to 2.
+        plot (bool, optional): To plot or not. Defaults to False.
+
+    Returns:
+        (float): peak to peak waveform value
+    """
     waveform_select = waveform[int(len(waveform) * cut_off):] # Avoid transients
     
     count, bins = np.histogram(waveform_select, bins=bins)
@@ -271,7 +289,7 @@ if __name__ == "__main__":
     
     file_name = "longitudal_5july" # File name of output
     coord_path = "C:/Users/tiston/code/coord_meas.csv" # csv with coordinates
-    store = "val"  # Store raw data or processed single value
+    store = "val"  # Store raw data or processed single value. The latter recommended
     
     output_dir = f"R:/measurements/{file_name}" # Folder to store data
     processed_filename = f"R:/measurements/{file_name}.npz" # File for processed data if also storing raw values

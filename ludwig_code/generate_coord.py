@@ -1,3 +1,6 @@
+# Code by Ludwig Tiston
+#
+# This script generates the coordinates used for the measurement by the next script.
 import csv
 import matplotlib.pyplot as plt
 
@@ -61,13 +64,14 @@ def generate_coordinates(specifications, filename):
 
 if __name__ == "__main__":
 
+    # Found to be good transverse settings
     specifications_search = {
         #    (min, max, step)
         'X': (-5, 5, 0.75),  # Horizontal
         'Y': (0, 30, 3),   # Hydrophone direction (should be in [0, inf) ) to go away from hydrophone
         'Z': (-5, 5, 0.75)   # Vertical
     }
-    
+    # Found to be good longitudinal setting
     specifications_meas = {
         #    (min, max, step)
         'X': (0, 0, 0.075),  # Horizontal
@@ -102,7 +106,7 @@ if __name__ == "__main__":
     
     time_hour = size * time_per_measurement / (60 * 60)
     time_day = time_hour / 24
-    # print(f"Time to complete search: {size_1 * time_per_measurement / (60)} minuits.")
+    # print(f"Time to complete search: {size_1 * time_per_measurement / (60)} minutes.")
     print(f"Total time to complete measurement: {time_day} days.")
     print(f"That is {time_hour} hours.")
     # print(f"Total time including data analyis: {size * (time_per_measurement + 1 / 3.1 ) / (60 * 60 * 24)} days")

@@ -1,3 +1,8 @@
+# Code by Ludwig Tiston
+# 
+# This script displays the results and, if necessary,
+# preforms post-processing.
+# 
 import os
 import numpy as np
 import pandas as pd
@@ -10,6 +15,17 @@ from scipy.ndimage import gaussian_filter
 
 
 def process_file(func_in):
+    """Code for running in parallel. Found not to be useful
+    as disc speed was the limiting factor.
+
+    Args:
+        func_in (tuple): tuple with path to filename and folder path of file
+
+    Returns:
+        tuple: A tuple containing the coordinates (list of floats), the value (float), 
+        and the standard deviation (float or NaN if not applicable).
+    """
+    
     file = func_in[0]
     folder = func_in[1]
     
@@ -40,6 +56,17 @@ def process_file(func_in):
 
 
 def process_data(processed_file, folder, cores=1):
+    """Reads and, if necessary, processes data
+
+    Args:
+        processed_file (filepath): path to output file (should be .npz)
+        folder (filepath): path to folder with data 
+        cores (int, optional): Number of cores to use, a bit unstable if not 1. Defaults to 1.
+
+    Returns:
+        tuple: A tuple containing the coordinates (list of floats), the value (float), 
+        and the standard deviation (float or NaN if not applicable).
+    """
     coord = []
     value = []
     std = []
@@ -87,14 +114,12 @@ def process_data(processed_file, folder, cores=1):
 
 if __name__ == "__main__":
     
-    # 17may nice front profile
-    # 24may nice side profile
     name = "longitudal_26june"
-    processed_file = f"R:/measurements/{name}.npz"
-    folder = f"R:/measurements/{name}"
-    plane_to_plot = 0
-    smooth = False
-    interpolation = "none" #"nsearest"
+    processed_file = f"R:/measurements/{name}.npz" # filename of processed file
+    folder = f"R:/measurements/{name}" # filename of folder with data inside
+    plane_to_plot = 0 # What plane to plot later.
+    smooth = False # If smoothing should be applied.
+    interpolation = "none" #"nearest"
     cmap = "jet"
     
     plane_dict = {
@@ -103,7 +128,6 @@ if __name__ == "__main__":
         2: "Z [mm]"
     }
     coord, value, std = process_data(processed_file, folder)
-
     # Assuming coord and value are numpy arrays
     coord = np.asarray(coord)
     print(coord.shape)
